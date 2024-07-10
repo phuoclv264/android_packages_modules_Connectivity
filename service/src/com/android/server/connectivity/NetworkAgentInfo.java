@@ -987,6 +987,10 @@ public class NetworkAgentInfo implements Comparable<NetworkAgentInfo>, NetworkRa
         }
     }
 
+    public NetworkInfo getNetworkInfo() {
+        return networkInfo;
+    }
+
     /**
      * Sets the specified requestId to linger on this network for the specified time. Called by
      * ConnectivityService when any request is moved to another network with a higher score, or
