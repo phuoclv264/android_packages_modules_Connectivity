@@ -7841,12 +7841,16 @@ public class ConnectivityService extends IConnectivityManager.Stub
 
         log("KrisLee test makeDefault method");
 
-        NetworkInfo oldDefaultNetworkInfo = oldDefaultNetwork.getNetworkInfo();
-        NetworkInfo newDefaultNetworkInfo = newDefaultNetwork.getNetworkInfo();
-
-        log("KrisLee oldDefaultNetworkInfo: " + oldDefaultNetworkInfo);
-        log("KrisLee newDefaultNetworkInfo: " + newDefaultNetworkInfo);
-
+        if (oldDefaultNetwork != null) {
+            NetworkInfo oldDefaultNetworkInfo = oldDefaultNetwork.getNetworkInfo();
+            log("KrisLee oldDefaultNetworkInfo: " + oldDefaultNetworkInfo);
+        }
+        
+        if (newDefaultNetwork != null) {
+            NetworkInfo newDefaultNetworkInfo = newDefaultNetwork.getNetworkInfo();
+            log("KrisLee newDefaultNetworkInfo: " + newDefaultNetworkInfo);
+        }
+        
         // // Fix up the NetworkCapabilities of any networks that have this network as underlying.
         // if (newDefaultNetwork != null) {
         //     propagateUnderlyingNetworkCapabilities(newDefaultNetwork.network);
