@@ -870,9 +870,10 @@ public class ConnectivityService extends IConnectivityManager.Stub
             }
             // Ethernet is often not specified in the configs, although many devices can use it via
             // USB host adapters. Add it as long as the ethernet service is here.
-            if (ctx.getSystemService(Context.ETHERNET_SERVICE) != null) {
-                addSupportedType(TYPE_ETHERNET);
-            }
+            // if (ctx.getSystemService(Context.ETHERNET_SERVICE) != null) {
+            //     addSupportedType(TYPE_ETHERNET);
+            // }
+            addSupportedType(TYPE_ETHERNET);
 
             // Always add TYPE_VPN as a supported type
             addSupportedType(TYPE_VPN);
@@ -1371,6 +1372,9 @@ public class ConnectivityService extends IConnectivityManager.Stub
         mDefaultWifiRequest = createDefaultInternetRequestForTransport(
                 NetworkCapabilities.TRANSPORT_WIFI, NetworkRequest.Type.BACKGROUND_REQUEST);
 
+        mDefaultEthernetRequest = createDefaultInternetRequestForTransport(
+                NetworkCapabilities.TRANSPORT_ETHERNET, NetworkRequest.Type.BACKGROUND_REQUEST);
+
         mDefaultVehicleRequest = createAlwaysOnRequestForCapability(
                 NetworkCapabilities.NET_CAPABILITY_VEHICLE_INTERNAL,
                 NetworkRequest.Type.BACKGROUND_REQUEST);
@@ -1572,6 +1576,16 @@ public class ConnectivityService extends IConnectivityManager.Stub
             return;  // Nothing to do.
         }
 
+        // Trying to set ethernet network to always turning on
+        if (mDefaultEthernetRequest != null) {
+            handleRegisterNetworkRequest(new NetworkRequestInfo(
+                    Process.myUid(), mDefaultEthernetRequest, null, new Binder(),
+                    NetworkCallback.FLAG_INCLUDE_LOCATION_INFO,
+                    null /* attributionTags */));
+
+            return;
+        }
+
         if (enable) {
             handleRegisterNetworkRequest(new NetworkRequestInfo(
                     Process.myUid(), networkRequest, null, new Binder(),
@@ -1585,7 +1599,7 @@ public class ConnectivityService extends IConnectivityManager.Stub
 
     private void handleConfigureAlwaysOnNetworks() {
         handleAlwaysOnNetworkRequest(mDefaultMobileDataRequest,
-                ConnectivitySettingsManager.MOBILE_DATA_ALWAYS_ON, true /* defaultValue */);
+                ConnectivitySettingsManager.MOBILE_DATA_ALWAYS_ON, false /* defaultValue */);
         handleAlwaysOnNetworkRequest(mDefaultWifiRequest,
                 ConnectivitySettingsManager.WIFI_ALWAYS_REQUESTED, false /* defaultValue */);
         final boolean vehicleAlwaysRequested = mResources.get().getBoolean(
@@ -6651,6 +6665,9 @@ public class ConnectivityService extends IConnectivityManager.Stub
     // Request used to optionally keep wifi data active even when higher
     // priority networks like ethernet are active.
     private final NetworkRequest mDefaultWifiRequest;
+
+    // Set default network to ethernet
+    private final NetworkRequest mDefaultEthernetRequest;
 
     // Request used to optionally keep vehicle internal network always active
     private final NetworkRequest mDefaultVehicleRequest;
