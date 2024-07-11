@@ -1578,8 +1578,6 @@ public class ConnectivityService extends IConnectivityManager.Stub
 
         // Trying to set ethernet network to always turning on
         if (mDefaultEthernetRequest != null) {
-            log("KrisLee test handleAlwaysOnNetworkRequest: trying to make ethernet network always on");
-
             handleRegisterNetworkRequest(new NetworkRequestInfo(
                     Process.myUid(), mDefaultEthernetRequest, null, new Binder(),
                     NetworkCallback.FLAG_INCLUDE_LOCATION_INFO,
