@@ -7839,35 +7839,29 @@ public class ConnectivityService extends IConnectivityManager.Stub
             log("Switching to new default network for: " + nri + " using " + newDefaultNetwork);
         }
 
-        NetworkInfo oldDefaultNetworkInfo = oldDefaultNetwork.getNetworkInfo();
-        NetworkInfo newDefaultNetworkInfo = newDefaultNetwork.getNetworkInfo();
+        // Fix up the NetworkCapabilities of any networks that have this network as underlying.
+        if (newDefaultNetwork != null) {
+            propagateUnderlyingNetworkCapabilities(newDefaultNetwork.network);
+        }
 
-        log("KrisLee oldDefaultNetworkInfo: " + oldDefaultNetworkInfo);
-        log("KrisLee newDefaultNetworkInfo: " + newDefaultNetworkInfo);
+        // Set an app level managed default and return since further processing only applies to the
+        // default network.
+        if (mDefaultRequest != nri) {
+            makeDefaultForApps(nri, oldDefaultNetwork, newDefaultNetwork);
+            return;
+        }
 
-        // // Fix up the NetworkCapabilities of any networks that have this network as underlying.
-        // if (newDefaultNetwork != null) {
-        //     propagateUnderlyingNetworkCapabilities(newDefaultNetwork.network);
-        // }
+        makeDefaultNetwork(newDefaultNetwork);
 
-        // // Set an app level managed default and return since further processing only applies to the
-        // // default network.
-        // if (mDefaultRequest != nri) {
-        //     makeDefaultForApps(nri, oldDefaultNetwork, newDefaultNetwork);
-        //     return;
-        // }
-
-        // makeDefaultNetwork(newDefaultNetwork);
-
-        // if (oldDefaultNetwork != null) {
-        //     mLingerMonitor.noteLingerDefaultNetwork(oldDefaultNetwork, newDefaultNetwork);
-        // }
-        // mNetworkActivityTracker.updateDataActivityTracking(newDefaultNetwork, oldDefaultNetwork);
-        // handleApplyDefaultProxy(null != newDefaultNetwork
-        //         ? newDefaultNetwork.linkProperties.getHttpProxy() : null);
-        // updateTcpBufferSizes(null != newDefaultNetwork
-        //         ? newDefaultNetwork.linkProperties.getTcpBufferSizes() : null);
-        // notifyIfacesChangedForNetworkStats();
+        if (oldDefaultNetwork != null) {
+            mLingerMonitor.noteLingerDefaultNetwork(oldDefaultNetwork, newDefaultNetwork);
+        }
+        mNetworkActivityTracker.updateDataActivityTracking(newDefaultNetwork, oldDefaultNetwork);
+        handleApplyDefaultProxy(null != newDefaultNetwork
+                ? newDefaultNetwork.linkProperties.getHttpProxy() : null);
+        updateTcpBufferSizes(null != newDefaultNetwork
+                ? newDefaultNetwork.linkProperties.getTcpBufferSizes() : null);
+        notifyIfacesChangedForNetworkStats();
     }
 
     private void makeDefaultForApps(@NonNull final NetworkRequestInfo nri,
