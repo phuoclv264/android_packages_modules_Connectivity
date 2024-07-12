@@ -7839,8 +7839,6 @@ public class ConnectivityService extends IConnectivityManager.Stub
             log("Switching to new default network for: " + nri + " using " + newDefaultNetwork);
         }
 
-        log("KrisLee test makeDefault method");
-
         NetworkInfo oldDefaultNetworkInfo = oldDefaultNetwork.getNetworkInfo();
         NetworkInfo newDefaultNetworkInfo = newDefaultNetwork.getNetworkInfo();
 
