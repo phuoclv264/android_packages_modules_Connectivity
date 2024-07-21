@@ -990,8 +990,6 @@ public class ConnectivityService extends IConnectivityManager.Stub
 
         /** Removes the given network from the specified legacy type list. */
         public void remove(int type, NetworkAgentInfo nai, boolean wasDefault) {
-            if (nai.toShortString().contains("ETHERNET")) return;
-
             ArrayList<NetworkAgentInfo> list = mTypeLists[type];
             if (list == null || list.isEmpty()) {
                 return;
