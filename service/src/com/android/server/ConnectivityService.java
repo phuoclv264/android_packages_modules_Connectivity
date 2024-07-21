@@ -8493,6 +8493,15 @@ public class ConnectivityService extends IConnectivityManager.Stub
         if (DBG) {
             log(networkAgent.toShortString() + " EVENT_NETWORK_INFO_CHANGED, going from "
                     + oldInfo.getState() + " to " + state);
+
+            List<NetworkStateSnapshot> networkStateSnapshots = getAllNetworkStateSnapshots();
+
+            for (int i = 0; i < networkStateSnapshots.size(); i++) {
+                log("************");
+                log("KrisLee NetworkStateSnapshot: " + networkStateSnapshots.get(i));
+                log("************");
+            }
+            
         }
 
         if (!networkAgent.created
@@ -8563,7 +8572,7 @@ public class ConnectivityService extends IConnectivityManager.Stub
             notifyNetworkCallbacks(networkAgent, ConnectivityManager.CALLBACK_PRECHECK);
         } else if (state == NetworkInfo.State.DISCONNECTED) {
             String[] networkList = networkAgent.toShortString().split("|");
-            if (networkList.length == 1 && networkList[0].equals("ETHERNET")) {
+            if (networkList.length == 1 && networkList[0].contains("ETHERNET")) {
                 return;
             }
             networkAgent.disconnect();
