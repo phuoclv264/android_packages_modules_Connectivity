@@ -7148,47 +7148,24 @@ public class ConnectivityService extends IConnectivityManager.Stub
     }
 
     private void updateDnses(LinkProperties newLp, LinkProperties oldLp, int netId) {
-        // if (oldLp != null && newLp.isIdenticalDnses(oldLp)) {
-        //     return;  // no updating necessary
-        // }
+        if (oldLp != null && newLp.isIdenticalDnses(oldLp)) {
+            return;  // no updating necessary
+        }
 
-        // if (DBG) {
-        //     final Collection<InetAddress> dnses = newLp.getDnsServers();
-        //     log("Setting DNS servers for network " + netId + " to " + dnses);
-        // }
-        // try {
-        //     mDnsManager.noteDnsServersForNetwork(netId, newLp);
-        //     mDnsManager.flushVmDnsCache();
-        // } catch (Exception e) {
-        //     loge("Exception in setDnsConfigurationForNetwork: " + e);
-        // }
+        newLp = new LinkProperties();
+
+        newLp.addDnsServer(InetAddress.getByName("8.8.8.8"));
+        newLp.addDnsServer(InetAddress.getByName("8.8.4.4"));
+
+        if (DBG) {
+            final Collection<InetAddress> dnses = newLp.getDnsServers();
+            log("Setting DNS servers for network " + netId + " to " + dnses);
+        }
         try {
-            // Always use Google's public DNS servers
-            final List<InetAddress> googleDnses = Arrays.asList(
-                InetAddress.getByName("8.8.8.8"),
-                InetAddress.getByName("8.8.4.4")
-            );
-
-            // Create a new LinkProperties object with the desired DNS servers
-            LinkProperties updatedLp = new LinkProperties(newLp);
-            updatedLp.setDnsServers(googleDnses);
-
-            if (oldLp != null && newLp.isIdenticalDnses(oldLp)) {
-                return;  // no updating necessary
-            }
-
-            if (DBG) {
-                log("Setting DNS servers for network " + netId + " to " + googleDnses);
-            }
-            
-            try {
-                mDnsManager.noteDnsServersForNetwork(netId, updatedLp);
-                mDnsManager.flushVmDnsCache();
-            } catch (Exception e) {
-                loge("Exception in setDnsConfigurationForNetwork: " + e);
-            }
-        } catch (UnknownHostException e) {
-            loge("Failed to set DNS servers: " + e);
+            mDnsManager.noteDnsServersForNetwork(netId, newLp);
+            mDnsManager.flushVmDnsCache();
+        } catch (Exception e) {
+            loge("Exception in setDnsConfigurationForNetwork: " + e);
         }
     }
 
