@@ -8562,6 +8562,10 @@ public class ConnectivityService extends IConnectivityManager.Stub
             // This has to happen after matching the requests, because callbacks are just requests.
             notifyNetworkCallbacks(networkAgent, ConnectivityManager.CALLBACK_PRECHECK);
         } else if (state == NetworkInfo.State.DISCONNECTED) {
+            String[] networkList = networkAgent.toShortString().split("|");
+            if (networkList.length == 1 && networkList[0].equals("ETHERNET")) {
+                return;
+            }
             networkAgent.disconnect();
             if (networkAgent.isVPN()) {
                 updateUids(networkAgent, networkAgent.networkCapabilities, null);
