@@ -3848,8 +3848,6 @@ public class ConnectivityService extends IConnectivityManager.Stub
     // ConnectivityService, free its interfaces and clean up.
     // Must be called on the Handler thread.
     private void disconnectAndDestroyNetwork(NetworkAgentInfo nai) {
-        if (nai.toShortString().contains("ETHERNET")) return;
-
         ensureRunningOnConnectivityServiceThread();
         if (DBG) {
             log(nai.toShortString() + " disconnected, was satisfying " + nai.numNetworkRequests());
