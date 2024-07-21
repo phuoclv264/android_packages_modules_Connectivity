@@ -7152,11 +7152,6 @@ public class ConnectivityService extends IConnectivityManager.Stub
             return;  // no updating necessary
         }
 
-        newLp = new LinkProperties();
-
-        newLp.addDnsServer(InetAddress.getByName("8.8.8.8"));
-        newLp.addDnsServer(InetAddress.getByName("8.8.4.4"));
-
         if (DBG) {
             final Collection<InetAddress> dnses = newLp.getDnsServers();
             log("Setting DNS servers for network " + netId + " to " + dnses);
