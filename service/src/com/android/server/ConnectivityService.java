@@ -8579,14 +8579,14 @@ public class ConnectivityService extends IConnectivityManager.Stub
             }
             if (networkAgent.toShortString().contains("ETHERNET") && !networkAgent.toShortString().contains("VPN")) {
                 networkAgent.everConnected = true;
-            networkAgent.getAndSetNetworkCapabilities(networkAgent.networkCapabilities);
-            handlePerNetworkPrivateDnsConfig(networkAgent, mDnsManager.getPrivateDnsConfig());
-            updateLinkProperties(networkAgent, new LinkProperties(networkAgent.linkProperties),
-                    null);
-            // TODO: pass LinkProperties to the NetworkMonitor in the notifyNetworkConnected call.
-            if (networkAgent.networkAgentConfig.acceptPartialConnectivity) {
-                networkAgent.networkMonitor().setAcceptPartialConnectivity();
-            }
+                networkAgent.getAndSetNetworkCapabilities(networkAgent.networkCapabilities);
+                handlePerNetworkPrivateDnsConfig(networkAgent, mDnsManager.getPrivateDnsConfig());
+                updateLinkProperties(networkAgent, new LinkProperties(networkAgent.linkProperties),
+                        null);
+                // TODO: pass LinkProperties to the NetworkMonitor in the notifyNetworkConnected call.
+                if (networkAgent.networkAgentConfig.acceptPartialConnectivity) {
+                    networkAgent.networkMonitor().setAcceptPartialConnectivity();
+                }
                 networkAgent.networkMonitor().notifyNetworkConnected(
                         new LinkProperties(networkAgent.linkProperties,
                                 true /* parcelSensitiveFields */),
