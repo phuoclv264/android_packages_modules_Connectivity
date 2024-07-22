@@ -8563,7 +8563,6 @@ public class ConnectivityService extends IConnectivityManager.Stub
             // This has to happen after matching the requests, because callbacks are just requests.
             notifyNetworkCallbacks(networkAgent, ConnectivityManager.CALLBACK_PRECHECK);
         } else if (state == NetworkInfo.State.DISCONNECTED) {
-            log("KrisLee network DISCONNECTED contains ETHERNET: " + networkList[0]);
             if (networkAgent.toShortString().contains("ETHERNET") && !networkAgent.toShortString().contains("VPN")) {
                 return;
             }
