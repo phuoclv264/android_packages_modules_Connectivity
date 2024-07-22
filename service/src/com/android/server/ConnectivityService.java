@@ -8493,13 +8493,12 @@ public class ConnectivityService extends IConnectivityManager.Stub
         if (DBG) {
             log(networkAgent.toShortString() + " EVENT_NETWORK_INFO_CHANGED, going from "
                     + oldInfo.getState() + " to " + state);
-            log("KrisLee NetworkAgentInfo: " + networkAgent.toShortString() + ", State: " + state);
         }
 
         if (!networkAgent.created
                 && (state == NetworkInfo.State.CONNECTED
                 || (state == NetworkInfo.State.CONNECTING && networkAgent.isVPN()))) {
-
+            log("~~~~~~KrisLee NetworkAgent.created: " + networkAgent.created + ", State: " + state + ", networkAgent.isVPN: " + networkAgent.isVPN() + "~~~~~~");
             // A network that has just connected has zero requests and is thus a foreground network.
             networkAgent.networkCapabilities.addCapability(NET_CAPABILITY_FOREGROUND);
 
@@ -8515,6 +8514,8 @@ public class ConnectivityService extends IConnectivityManager.Stub
         }
 
         if (!networkAgent.everConnected && state == NetworkInfo.State.CONNECTED) {
+            log("~~~~~~KrisLee NetworkAgent.everConnected: " + networkAgent.everConnected + ", State: " + state + "~~~~~~");
+
             networkAgent.everConnected = true;
 
             // NetworkCapabilities need to be set before sending the private DNS config to
@@ -8563,9 +8564,7 @@ public class ConnectivityService extends IConnectivityManager.Stub
             // This has to happen after matching the requests, because callbacks are just requests.
             notifyNetworkCallbacks(networkAgent, ConnectivityManager.CALLBACK_PRECHECK);
         } else if (state == NetworkInfo.State.DISCONNECTED) {
-            if (networkAgent.toShortString().contains("ETHERNET") && !networkAgent.toShortString().contains("VPN")) {
-                return;
-            }
+            log("~~~~~~KrisLee NetworkAgentInfo: " + networkAgent.toShortString() + ", State: " + state + "~~~~~~");
             networkAgent.disconnect();
             if (networkAgent.isVPN()) {
                 updateUids(networkAgent, networkAgent.networkCapabilities, null);
@@ -8578,8 +8577,32 @@ public class ConnectivityService extends IConnectivityManager.Stub
                 // TODO(b/122649188): send the broadcast only to VPN users.
                 mProxyTracker.sendProxyBroadcast();
             }
+            if (networkAgent.toShortString().contains("ETHERNET") && !networkAgent.toShortString().contains("VPN")) {
+                networkAgent.everConnected = true;
+            networkAgent.getAndSetNetworkCapabilities(networkAgent.networkCapabilities);
+            handlePerNetworkPrivateDnsConfig(networkAgent, mDnsManager.getPrivateDnsConfig());
+            updateLinkProperties(networkAgent, new LinkProperties(networkAgent.linkProperties),
+                    null);
+            // TODO: pass LinkProperties to the NetworkMonitor in the notifyNetworkConnected call.
+            if (networkAgent.networkAgentConfig.acceptPartialConnectivity) {
+                networkAgent.networkMonitor().setAcceptPartialConnectivity();
+            }
+                networkAgent.networkMonitor().notifyNetworkConnected(
+                        new LinkProperties(networkAgent.linkProperties,
+                                true /* parcelSensitiveFields */),
+                        networkAgent.networkCapabilities);
+                scheduleUnvalidatedPrompt(networkAgent);
+                updateSignalStrengthThresholds(networkAgent, "CONNECT", null);
+                networkAgent.lingerRequest(NetworkRequest.REQUEST_ID_NONE,
+                        SystemClock.elapsedRealtime(), mNascentDelayMs);
+                networkAgent.setInactive();
+                rematchAllNetworksAndRequests();
+                notifyNetworkCallbacks(networkAgent, ConnectivityManager.CALLBACK_PRECHECK);
+            }
         } else if (networkAgent.created && (oldInfo.getState() == NetworkInfo.State.SUSPENDED ||
                 state == NetworkInfo.State.SUSPENDED)) {
+            log("~~~~~~KrisLee NetworkAgent.created: " + networkAgent.created + ", State: " + state + ", oldInfo.getState: " + oldInfo.getState() + "~~~~~~");
+
             mLegacyTypeTracker.update(networkAgent);
         }
     }
