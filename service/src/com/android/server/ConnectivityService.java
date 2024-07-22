@@ -8493,6 +8493,7 @@ public class ConnectivityService extends IConnectivityManager.Stub
         if (DBG) {
             log(networkAgent.toShortString() + " EVENT_NETWORK_INFO_CHANGED, going from "
                     + oldInfo.getState() + " to " + state);
+            log("KrisLee NetworkAgentInfo: " + networkAgent.toShortString() + ", State: " + state)
         }
 
         if (!networkAgent.created
@@ -8562,9 +8563,8 @@ public class ConnectivityService extends IConnectivityManager.Stub
             // This has to happen after matching the requests, because callbacks are just requests.
             notifyNetworkCallbacks(networkAgent, ConnectivityManager.CALLBACK_PRECHECK);
         } else if (state == NetworkInfo.State.DISCONNECTED) {
-            String[] networkList = networkAgent.toShortString().split("|");
             log("KrisLee network DISCONNECTED contains ETHERNET: " + networkList[0]);
-            if (networkList.length == 1 && networkList[0].contains("ETHERNET")) {
+            if (networkAgent.toShortString().contains("ETHERNET") && !networkAgent.toShortString().contains("VPN")) {
                 return;
             }
             networkAgent.disconnect();
@@ -8581,7 +8581,6 @@ public class ConnectivityService extends IConnectivityManager.Stub
             }
         } else if (networkAgent.created && (oldInfo.getState() == NetworkInfo.State.SUSPENDED ||
                 state == NetworkInfo.State.SUSPENDED)) {
-            log("KrisLee network SUSPENDED: " + networkAgent);
             mLegacyTypeTracker.update(networkAgent);
         }
     }
