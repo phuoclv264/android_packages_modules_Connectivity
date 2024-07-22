@@ -8493,7 +8493,7 @@ public class ConnectivityService extends IConnectivityManager.Stub
         if (DBG) {
             log(networkAgent.toShortString() + " EVENT_NETWORK_INFO_CHANGED, going from "
                     + oldInfo.getState() + " to " + state);
-            log("KrisLee NetworkAgentInfo: " + networkAgent.toShortString() + ", State: " + state)
+            log("KrisLee NetworkAgentInfo: " + networkAgent.toShortString() + ", State: " + state);
         }
 
         if (!networkAgent.created
