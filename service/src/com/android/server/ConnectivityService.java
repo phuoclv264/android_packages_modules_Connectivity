@@ -118,7 +118,6 @@ import android.net.ConnectivityResources;
 import android.net.ConnectivitySettingsManager;
 import android.net.DataStallReportParcelable;
 import android.net.DnsResolverServiceManager;
-import android.net.EthernetManager;
 import android.net.ICaptivePortal;
 import android.net.IConnectivityDiagnosticsCallback;
 import android.net.IConnectivityManager;
@@ -8489,7 +8488,6 @@ public class ConnectivityService extends IConnectivityManager.Stub
     private void updateNetworkInfo(NetworkAgentInfo networkAgent, NetworkInfo info) {
         final NetworkInfo newInfo = mixInInfo(networkAgent, info);
         final NetworkInfo.State state = newInfo.getState();
-        EthernetManager em = (EthernetManager) mContext.getSystemService(Context.ETHERNET_SERVICE);
         NetworkInfo oldInfo = null;
         synchronized (networkAgent) {
             oldInfo = networkAgent.networkInfo;
@@ -8499,7 +8497,6 @@ public class ConnectivityService extends IConnectivityManager.Stub
         if (DBG) {
             log(networkAgent.toShortString() + " EVENT_NETWORK_INFO_CHANGED, going from "
                     + oldInfo.getState() + " to " + state);
-            log("~~~~~~KrisLee available interfaces: " + em.getAvailableInterfacesKrisLee());
         }
 
         if (!networkAgent.created
