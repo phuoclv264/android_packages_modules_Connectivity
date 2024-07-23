@@ -749,6 +749,7 @@ public class Tethering {
     private int setEthernetTethering(final boolean enable) {
         final EthernetManager em = (EthernetManager) mContext.getSystemService(
                 Context.ETHERNET_SERVICE);
+        log("~~~~~~KrisLee available interfaces: " + em.getAvailableInterfaces());
         if (enable) {
             if (mEthernetCallback != null) {
                 Log.d(TAG, "Ethernet tethering already started");
