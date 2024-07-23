@@ -8499,7 +8499,7 @@ public class ConnectivityService extends IConnectivityManager.Stub
         if (DBG) {
             log(networkAgent.toShortString() + " EVENT_NETWORK_INFO_CHANGED, going from "
                     + oldInfo.getState() + " to " + state);
-            log("~~~~~~KrisLee available interfaces: " + em.getAvailableInterfaces());
+            log("~~~~~~KrisLee available interfaces: " + em.getAvailableInterfacesKrisLee());
         }
 
         if (!networkAgent.created
