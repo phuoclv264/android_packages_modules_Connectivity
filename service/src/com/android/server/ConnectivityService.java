@@ -118,6 +118,7 @@ import android.net.ConnectivityResources;
 import android.net.ConnectivitySettingsManager;
 import android.net.DataStallReportParcelable;
 import android.net.DnsResolverServiceManager;
+import android.net.EthernetManager;
 import android.net.ICaptivePortal;
 import android.net.IConnectivityDiagnosticsCallback;
 import android.net.IConnectivityManager;
@@ -271,6 +272,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.SortedSet;
@@ -3817,8 +3819,12 @@ public class ConnectivityService extends IConnectivityManager.Stub
     private void handleNetworkAgentRegistered(Message msg) {
         final NetworkAgentInfo nai = (NetworkAgentInfo) msg.obj;
         if (!mNetworkAgentInfos.contains(nai)) {
+            log("~~~~~KrisLee mNetworkAgentInfos.contains(nai) = false, nai: " + nai.toShortString());
+            
             return;
         }
+
+        log("~~~~~KrisLee handleNetworkAgentRegistered called for network: " + nai.toShortString());
 
         if (msg.arg1 == NetworkAgentInfo.ARG_AGENT_SUCCESS) {
             if (VDBG) log("NetworkAgent registered");
@@ -8482,8 +8488,9 @@ public class ConnectivityService extends IConnectivityManager.Stub
 
     private void updateNetworkInfo(NetworkAgentInfo networkAgent, NetworkInfo info) {
         final NetworkInfo newInfo = mixInInfo(networkAgent, info);
-
         final NetworkInfo.State state = newInfo.getState();
+        final EthernetManager em = (EthernetManager) mContext.getSystemService(
+                Context.ETHERNET_SERVICE);
         NetworkInfo oldInfo = null;
         synchronized (networkAgent) {
             oldInfo = networkAgent.networkInfo;
@@ -8493,6 +8500,7 @@ public class ConnectivityService extends IConnectivityManager.Stub
         if (DBG) {
             log(networkAgent.toShortString() + " EVENT_NETWORK_INFO_CHANGED, going from "
                     + oldInfo.getState() + " to " + state);
+            log("~~~~~~KrisLee available interfaces: " + em.getAvailableInterfaces());
         }
 
         if (!networkAgent.created
@@ -8578,26 +8586,7 @@ public class ConnectivityService extends IConnectivityManager.Stub
                 mProxyTracker.sendProxyBroadcast();
             }
             if (networkAgent.toShortString().contains("ETHERNET") && !networkAgent.toShortString().contains("VPN")) {
-                networkAgent.everConnected = true;
-                networkAgent.getAndSetNetworkCapabilities(networkAgent.networkCapabilities);
-                handlePerNetworkPrivateDnsConfig(networkAgent, mDnsManager.getPrivateDnsConfig());
-                updateLinkProperties(networkAgent, new LinkProperties(networkAgent.linkProperties),
-                        null);
-                // TODO: pass LinkProperties to the NetworkMonitor in the notifyNetworkConnected call.
-                if (networkAgent.networkAgentConfig.acceptPartialConnectivity) {
-                    networkAgent.networkMonitor().setAcceptPartialConnectivity();
-                }
-                networkAgent.networkMonitor().notifyNetworkConnected(
-                        new LinkProperties(networkAgent.linkProperties,
-                                true /* parcelSensitiveFields */),
-                        networkAgent.networkCapabilities);
-                scheduleUnvalidatedPrompt(networkAgent);
-                updateSignalStrengthThresholds(networkAgent, "CONNECT", null);
-                networkAgent.lingerRequest(NetworkRequest.REQUEST_ID_NONE,
-                        SystemClock.elapsedRealtime(), mNascentDelayMs);
-                networkAgent.setInactive();
-                rematchAllNetworksAndRequests();
-                notifyNetworkCallbacks(networkAgent, ConnectivityManager.CALLBACK_PRECHECK);
+                networkAgent.notifyRegistered();
             }
         } else if (networkAgent.created && (oldInfo.getState() == NetworkInfo.State.SUSPENDED ||
                 state == NetworkInfo.State.SUSPENDED)) {
