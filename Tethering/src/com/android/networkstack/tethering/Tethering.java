@@ -754,9 +754,6 @@ public class Tethering {
                 Log.d(TAG, "Ethernet tethering already started");
                 return TETHER_ERROR_NO_ERROR;
             }
-
-            Log.d(TAG, "KrisLee setEthernetTethering true");
-
             mEthernetCallback = new EthernetCallback();
             mEthernetIfaceRequest = em.requestTetheredInterface(mExecutor, mEthernetCallback);
         } else {
@@ -766,8 +763,6 @@ public class Tethering {
     }
 
     private void stopEthernetTethering() {
-        Log.d(TAG, "KrisLee stopEthernetTethering");
-
         if (mConfiguredEthernetIface != null) {
             ensureIpServerStopped(mConfiguredEthernetIface);
             mConfiguredEthernetIface = null;

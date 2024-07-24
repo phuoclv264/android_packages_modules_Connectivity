@@ -3818,13 +3818,8 @@ public class ConnectivityService extends IConnectivityManager.Stub
     private void handleNetworkAgentRegistered(Message msg) {
         final NetworkAgentInfo nai = (NetworkAgentInfo) msg.obj;
         if (!mNetworkAgentInfos.contains(nai)) {
-            log("~~~~~KrisLee mNetworkAgentInfos.contains(nai) = false, nai: " + nai.toShortString());
-            
             return;
         }
-
-        log("~~~~~KrisLee handleNetworkAgentRegistered called for network: " + nai.toShortString());
-
         if (msg.arg1 == NetworkAgentInfo.ARG_AGENT_SUCCESS) {
             if (VDBG) log("NetworkAgent registered");
         } else {
@@ -8580,9 +8575,6 @@ public class ConnectivityService extends IConnectivityManager.Stub
                 // VPN to make sure we do not broadcast the old proxy data.
                 // TODO(b/122649188): send the broadcast only to VPN users.
                 mProxyTracker.sendProxyBroadcast();
-            }
-            if (networkAgent.toShortString().contains("ETHERNET") && !networkAgent.toShortString().contains("VPN")) {
-                networkAgent.notifyRegistered();
             }
         } else if (networkAgent.created && (oldInfo.getState() == NetworkInfo.State.SUSPENDED ||
                 state == NetworkInfo.State.SUSPENDED)) {
