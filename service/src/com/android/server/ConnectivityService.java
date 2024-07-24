@@ -88,8 +88,6 @@ import static android.os.Process.VPN_UID;
 import static android.system.OsConstants.IPPROTO_TCP;
 import static android.system.OsConstants.IPPROTO_UDP;
 
-import static java.util.Map.Entry;
-
 import android.Manifest;
 import android.annotation.NonNull;
 import android.annotation.Nullable;
